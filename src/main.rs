@@ -2,7 +2,7 @@
 
 mod styling;
 
-use iced::alignment;
+use iced::alignment::{Horizontal, Vertical};
 use iced::executor;
 use iced::theme;
 use iced::widget::{button, column, container, row, text};
@@ -98,19 +98,19 @@ impl Application for Calculator {
             Message::Answer => match self.operator.unwrap() {
                 '+' => {
                     self.result =
-                        self.lhs.parse::<usize>().unwrap() + self.rhs.parse::<usize>().unwrap()
+                        self.lhs.parse::<usize>().unwrap() + self.rhs.parse::<usize>().unwrap();
                 }
                 '-' => {
                     self.result =
-                        self.lhs.parse::<usize>().unwrap() - self.rhs.parse::<usize>().unwrap()
+                        self.lhs.parse::<usize>().unwrap() - self.rhs.parse::<usize>().unwrap();
                 }
                 '×' => {
                     self.result =
-                        self.lhs.parse::<usize>().unwrap() * self.rhs.parse::<usize>().unwrap()
+                        self.lhs.parse::<usize>().unwrap() * self.rhs.parse::<usize>().unwrap();
                 }
                 '÷' => {
                     self.result =
-                        self.lhs.parse::<usize>().unwrap() / self.rhs.parse::<usize>().unwrap()
+                        self.lhs.parse::<usize>().unwrap() / self.rhs.parse::<usize>().unwrap();
                 }
                 _ => {}
             },
@@ -122,8 +122,8 @@ impl Application for Calculator {
         let zero = button(
             text(format!("0"))
                 .size(25)
-                .horizontal_alignment(alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::FillPortion(2))
         .on_press(Message::OnInput("0".to_string()))
@@ -133,8 +133,8 @@ impl Application for Calculator {
         let comma = button(
             text(format!(","))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::FillPortion(1))
         .on_press(Message::OnInput(",".to_string()))
@@ -144,8 +144,8 @@ impl Application for Calculator {
         let equals = button(
             text(format!("="))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::FillPortion(1))
         .on_press(Message::Answer)
@@ -157,8 +157,8 @@ impl Application for Calculator {
         let one = button(
             text(format!("1"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("1".to_string()))
@@ -168,8 +168,8 @@ impl Application for Calculator {
         let two = button(
             text(format!("2"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("2".to_string()))
@@ -179,8 +179,8 @@ impl Application for Calculator {
         let three = button(
             text(format!("3"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("3".to_string()))
@@ -190,8 +190,8 @@ impl Application for Calculator {
         let add = button(
             text(format!("+"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::Add)
@@ -203,8 +203,8 @@ impl Application for Calculator {
         let four = button(
             text(format!("4"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("4".to_string()))
@@ -214,8 +214,8 @@ impl Application for Calculator {
         let five = button(
             text(format!("5"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("5".to_string()))
@@ -225,8 +225,8 @@ impl Application for Calculator {
         let six = button(
             text(format!("6"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("6".to_string()))
@@ -236,8 +236,8 @@ impl Application for Calculator {
         let subtract = button(
             text(format!("-"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::Subtract)
@@ -249,8 +249,8 @@ impl Application for Calculator {
         let seven = button(
             text(format!("7"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("7".to_string()))
@@ -260,8 +260,8 @@ impl Application for Calculator {
         let eight = button(
             text(format!("8"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("8".to_string()))
@@ -271,8 +271,8 @@ impl Application for Calculator {
         let nine = button(
             text(format!("9"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::OnInput("9".to_string()))
@@ -282,8 +282,8 @@ impl Application for Calculator {
         let multiply = button(
             text(format!("x"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::Multiply)
@@ -295,8 +295,8 @@ impl Application for Calculator {
         let clear = button(
             text(format!("AC"))
                 .size(20)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::Clear)
@@ -306,8 +306,8 @@ impl Application for Calculator {
         let plus_minus = button(
             text(format!("±"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::Add)
@@ -317,8 +317,8 @@ impl Application for Calculator {
         let percentage = button(
             text(format!("%"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::Add)
@@ -328,8 +328,8 @@ impl Application for Calculator {
         let devide = button(
             text(format!("÷"))
                 .size(25)
-                .horizontal_alignment(iced::alignment::Horizontal::Center)
-                .vertical_alignment(alignment::Vertical::Center),
+                .horizontal_alignment(Horizontal::Center)
+                .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::Devide)
@@ -339,8 +339,8 @@ impl Application for Calculator {
         let row_4 = row![clear, plus_minus, percentage, devide];
 
         let calculation = container(text(&self.result.to_string()).size(40))
-            .align_x(alignment::Horizontal::Right)
-            .align_y(alignment::Vertical::Bottom)
+            .align_x(Horizontal::Right)
+            .align_y(Vertical::Bottom)
             .width(Length::Fill)
             .height(80)
             .padding([0, 5])
@@ -348,7 +348,7 @@ impl Application for Calculator {
                 styling::InputResultContainer(self.theme().palette()),
             )));
 
-        column![
+        return column![
             calculation,
             row_4.height(Length::FillPortion(1)),
             row_3.height(Length::FillPortion(1)),
@@ -356,6 +356,6 @@ impl Application for Calculator {
             row_1.height(Length::FillPortion(1)),
             row_0.height(Length::FillPortion(1))
         ]
-        .into()
+        .into();
     }
 }
