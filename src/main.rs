@@ -36,10 +36,13 @@ fn main() -> iced::Result {
     Calculator::run(settings)
 }
 
+#[derive(Debug, Clone)]
 struct Calculator {
+    input: String,
     lhs: String,
     rhs: String,
     operator: Option<char>,
+    calc: bool,
     result: usize,
 }
 
@@ -63,9 +66,11 @@ impl Application for Calculator {
     fn new(_flags: Self::Flags) -> (Self, Command<Message>) {
         (
             Self {
+                input: "".to_string(),
                 lhs: "".to_string(),
                 rhs: "".to_string(),
                 operator: None,
+                calc: false,
                 result: 0,
             },
             Command::none(),
@@ -90,30 +95,35 @@ impl Application for Calculator {
             Message::Multiply => self.operator = Some('x'),
             Message::Devide => self.operator = Some('÷'),
             Message::Clear => {
+                self.input = "".to_string();
                 self.result = 0;
                 self.lhs = "".to_string();
                 self.rhs = "".to_string();
+                self.calc = false;
                 self.operator = None;
             }
-            Message::Answer => match self.operator.unwrap() {
-                '+' => {
-                    self.result =
-                        self.lhs.parse::<usize>().unwrap() + self.rhs.parse::<usize>().unwrap();
+            Message::Answer => {
+                self.calc = true;
+                match self.operator.unwrap() {
+                    '+' => {
+                        self.result =
+                            self.lhs.parse::<usize>().unwrap() + self.rhs.parse::<usize>().unwrap();
+                    }
+                    '-' => {
+                        self.result =
+                            self.lhs.parse::<usize>().unwrap() - self.rhs.parse::<usize>().unwrap();
+                    }
+                    '×' => {
+                        self.result =
+                            self.lhs.parse::<usize>().unwrap() * self.rhs.parse::<usize>().unwrap();
+                    }
+                    '÷' => {
+                        self.result =
+                            self.lhs.parse::<usize>().unwrap() / self.rhs.parse::<usize>().unwrap();
+                    }
+                    _ => {}
                 }
-                '-' => {
-                    self.result =
-                        self.lhs.parse::<usize>().unwrap() - self.rhs.parse::<usize>().unwrap();
-                }
-                '×' => {
-                    self.result =
-                        self.lhs.parse::<usize>().unwrap() * self.rhs.parse::<usize>().unwrap();
-                }
-                '÷' => {
-                    self.result =
-                        self.lhs.parse::<usize>().unwrap() / self.rhs.parse::<usize>().unwrap();
-                }
-                _ => {}
-            },
+            }
         }
         Command::none()
     }
@@ -338,15 +348,32 @@ impl Application for Calculator {
 
         let row_4 = row![clear, plus_minus, percentage, devide];
 
-        let calculation = container(text(&self.result.to_string()).size(40))
-            .align_x(Horizontal::Right)
-            .align_y(Vertical::Bottom)
-            .width(Length::Fill)
-            .height(80)
-            .padding([0, 5])
-            .style(theme::Container::Custom(Box::new(
-                styling::InputResultContainer(self.theme().palette()),
-            )));
+        let ans = &self.result.to_string();
+        let l = &self.lhs;
+        let r = &self.rhs;
+
+        let calculation = container(
+            text(if !self.calc && l == "" {
+                "0".to_string()
+            } else if !self.calc && l != "" {
+                l.to_string()
+            } else if !self.calc && !self.operator.is_none() {
+                r.to_string()
+            } else if self.calc {
+                ans.to_string()
+            } else {
+                "0".to_string()
+            })
+            .size(40),
+        )
+        .align_x(Horizontal::Right)
+        .align_y(Vertical::Bottom)
+        .width(Length::Fill)
+        .height(80)
+        .padding([0, 5])
+        .style(theme::Container::Custom(Box::new(
+            styling::InputResultContainer(self.theme().palette()),
+        )));
 
         return column![
             calculation,
