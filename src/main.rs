@@ -1,4 +1,6 @@
-mod buttons;
+#![warn(clippy::all, clippy::pedantic, clippy::restriction)]
+
+mod styling;
 
 use iced::alignment;
 use iced::executor;
@@ -11,19 +13,18 @@ use iced::{window, Application, Command, Length, Settings, Theme};
 fn main() -> iced::Result {
     let settings = Settings {
         window: window::Settings {
-            size: (232, 292),
+            size: (232, 321),
             resizable: true,
             decorations: true,
             position: Position::Default,
-            min_size: Some((232, 292)),
-            max_size: Some((232, 292)),
+            min_size: Some((232, 321)),
+            max_size: Some((232, 321)),
             visible: true,
-            transparent: false,
+            transparent: true,
             platform_specific: PlatformSpecific {
                 title_hidden: true,
                 titlebar_transparent: true,
-
-                ..Default::default()
+                fullsize_content_view: true,
             },
             ..Default::default()
         },
@@ -127,7 +128,7 @@ impl Application for Calculator {
         .width(Length::FillPortion(2))
         .on_press(Message::OnInput("0".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let comma = button(
             text(format!(","))
@@ -138,7 +139,7 @@ impl Application for Calculator {
         .width(Length::FillPortion(1))
         .on_press(Message::OnInput(",".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let equals = button(
             text(format!("="))
@@ -149,7 +150,7 @@ impl Application for Calculator {
         .width(Length::FillPortion(1))
         .on_press(Message::Answer)
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Arth)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
 
         let row_0 = row![zero, comma, equals];
 
@@ -162,7 +163,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("1".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let two = button(
             text(format!("2"))
@@ -173,7 +174,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("2".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let three = button(
             text(format!("3"))
@@ -184,7 +185,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("3".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let add = button(
             text(format!("+"))
@@ -195,7 +196,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::Add)
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Arth)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
 
         let row_1 = row![one, two, three, add];
 
@@ -208,7 +209,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("4".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let five = button(
             text(format!("5"))
@@ -219,7 +220,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("5".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let six = button(
             text(format!("6"))
@@ -230,7 +231,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("6".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let subtract = button(
             text(format!("-"))
@@ -241,7 +242,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::Subtract)
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Arth)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
 
         let row_2 = row![four, five, six, subtract];
 
@@ -254,7 +255,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("7".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let eight = button(
             text(format!("8"))
@@ -265,7 +266,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("8".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let nine = button(
             text(format!("9"))
@@ -276,7 +277,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::OnInput("9".to_string()))
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Num)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let multiply = button(
             text(format!("x"))
@@ -287,7 +288,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::Multiply)
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Arth)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
 
         let row_3 = row![seven, eight, nine, multiply];
 
@@ -300,7 +301,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::Clear)
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Math)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Math)));
 
         let plus_minus = button(
             text(format!("±"))
@@ -311,7 +312,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::Add)
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Math)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Math)));
 
         let percentage = button(
             text(format!("%"))
@@ -322,7 +323,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::Add)
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Math)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Math)));
 
         let devide = button(
             text(format!("÷"))
@@ -333,7 +334,7 @@ impl Application for Calculator {
         .width(Length::Fill)
         .on_press(Message::Devide)
         .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(buttons::Button::Arth)));
+        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
 
         let row_4 = row![clear, plus_minus, percentage, devide];
 
@@ -341,10 +342,10 @@ impl Application for Calculator {
             .align_x(alignment::Horizontal::Right)
             .align_y(alignment::Vertical::Bottom)
             .width(Length::Fill)
-            .height(52)
+            .height(80)
             .padding([0, 5])
             .style(theme::Container::Custom(Box::new(
-                buttons::InputResultContainer(self.theme().palette()),
+                styling::InputResultContainer(self.theme().palette()),
             )));
 
         column![
