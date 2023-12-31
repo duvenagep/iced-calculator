@@ -1,6 +1,7 @@
-#![warn(clippy::all, clippy::pedantic, clippy::restriction)]
+#![warn(clippy::all, clippy::pedantic)]
 
 mod styling;
+mod view;
 
 use iced::alignment::{Horizontal, Vertical};
 use iced::executor;
@@ -36,18 +37,16 @@ fn main() -> iced::Result {
     Calculator::run(settings)
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 struct Calculator {
-    input: String,
     lhs: String,
     rhs: String,
     operator: Option<char>,
-    calc: bool,
     result: usize,
 }
 
 #[derive(Debug, Clone)]
-enum Message {
+pub enum Message {
     OnInput(String),
     Add,
     Subtract,
@@ -64,17 +63,7 @@ impl Application for Calculator {
     type Flags = ();
 
     fn new(_flags: Self::Flags) -> (Self, Command<Message>) {
-        (
-            Self {
-                input: "".to_string(),
-                lhs: "".to_string(),
-                rhs: "".to_string(),
-                operator: None,
-                calc: false,
-                result: 0,
-            },
-            Command::none(),
-        )
+        (Self::default(), Command::none())
     }
 
     fn title(&self) -> String {
@@ -83,6 +72,10 @@ impl Application for Calculator {
 
     fn update(&mut self, message: Self::Message) -> Command<Message> {
         match message {
+            Message::Add => self.operator = Some('+'),
+            Message::Subtract => self.operator = Some('-'),
+            Message::Multiply => self.operator = Some('x'),
+            Message::Devide => self.operator = Some('÷'),
             Message::OnInput(val) => {
                 if self.operator.is_none() {
                     self.lhs.push_str(&val)
@@ -90,47 +83,35 @@ impl Application for Calculator {
                     self.rhs.push_str(&val)
                 }
             }
-            Message::Add => self.operator = Some('+'),
-            Message::Subtract => self.operator = Some('-'),
-            Message::Multiply => self.operator = Some('x'),
-            Message::Devide => self.operator = Some('÷'),
             Message::Clear => {
-                self.input = "".to_string();
-                self.result = 0;
-                self.lhs = "".to_string();
-                self.rhs = "".to_string();
-                self.calc = false;
-                self.operator = None;
+                *self = Self::default();
             }
-            Message::Answer => {
-                self.calc = true;
-                match self.operator.unwrap() {
-                    '+' => {
-                        self.result =
-                            self.lhs.parse::<usize>().unwrap() + self.rhs.parse::<usize>().unwrap();
-                    }
-                    '-' => {
-                        self.result =
-                            self.lhs.parse::<usize>().unwrap() - self.rhs.parse::<usize>().unwrap();
-                    }
-                    '×' => {
-                        self.result =
-                            self.lhs.parse::<usize>().unwrap() * self.rhs.parse::<usize>().unwrap();
-                    }
-                    '÷' => {
-                        self.result =
-                            self.lhs.parse::<usize>().unwrap() / self.rhs.parse::<usize>().unwrap();
-                    }
-                    _ => {}
+            Message::Answer => match self.operator.unwrap() {
+                '+' => {
+                    self.result =
+                        self.lhs.parse::<usize>().unwrap() + self.rhs.parse::<usize>().unwrap();
                 }
-            }
+                '-' => {
+                    self.result =
+                        self.lhs.parse::<usize>().unwrap() - self.rhs.parse::<usize>().unwrap();
+                }
+                'x' => {
+                    self.result =
+                        self.lhs.parse::<usize>().unwrap() * self.rhs.parse::<usize>().unwrap();
+                }
+                '÷' => {
+                    self.result =
+                        self.lhs.parse::<usize>().unwrap() / self.rhs.parse::<usize>().unwrap();
+                }
+                _ => {}
+            },
         }
         Command::none()
     }
 
     fn view(&self) -> iced::Element<'_, Self::Message> {
         let zero = button(
-            text(format!("0"))
+            text("0")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -141,7 +122,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let comma = button(
-            text(format!(","))
+            text(",")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -152,7 +133,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let equals = button(
-            text(format!("="))
+            text("=")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -165,7 +146,7 @@ impl Application for Calculator {
         let row_0 = row![zero, comma, equals];
 
         let one = button(
-            text(format!("1"))
+            text("1")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -176,7 +157,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let two = button(
-            text(format!("2"))
+            text("2")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -187,7 +168,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let three = button(
-            text(format!("3"))
+            text("3")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -198,7 +179,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let add = button(
-            text(format!("+"))
+            text("+")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -211,7 +192,7 @@ impl Application for Calculator {
         let row_1 = row![one, two, three, add];
 
         let four = button(
-            text(format!("4"))
+            text("4")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -222,7 +203,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let five = button(
-            text(format!("5"))
+            text("5")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -233,7 +214,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let six = button(
-            text(format!("6"))
+            text("6")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -244,7 +225,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let subtract = button(
-            text(format!("-"))
+            text("-")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -257,7 +238,7 @@ impl Application for Calculator {
         let row_2 = row![four, five, six, subtract];
 
         let seven = button(
-            text(format!("7"))
+            text("7")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -268,7 +249,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let eight = button(
-            text(format!("8"))
+            text("8")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -279,7 +260,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let nine = button(
-            text(format!("9"))
+            text("9")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -290,7 +271,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
 
         let multiply = button(
-            text(format!("x"))
+            text("x")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -303,10 +284,14 @@ impl Application for Calculator {
         let row_3 = row![seven, eight, nine, multiply];
 
         let clear = button(
-            text(format!("AC"))
-                .size(20)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
+            text(if self.lhs.is_empty() {
+                "AC".to_string()
+            } else {
+                "C".to_string()
+            })
+            .size(20)
+            .horizontal_alignment(Horizontal::Center)
+            .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
         .on_press(Message::Clear)
@@ -314,7 +299,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Math)));
 
         let plus_minus = button(
-            text(format!("±"))
+            text("±")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -325,7 +310,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Math)));
 
         let percentage = button(
-            text(format!("%"))
+            text("%")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -336,7 +321,7 @@ impl Application for Calculator {
         .style(theme::Button::Custom(Box::new(styling::Button::Math)));
 
         let devide = button(
-            text(format!("÷"))
+            text("÷")
                 .size(25)
                 .horizontal_alignment(Horizontal::Center)
                 .vertical_alignment(Vertical::Center),
@@ -348,23 +333,29 @@ impl Application for Calculator {
 
         let row_4 = row![clear, plus_minus, percentage, devide];
 
-        let ans = &self.result.to_string();
-        let l = &self.lhs;
-        let r = &self.rhs;
-
         let calculation = container(
-            text(if !self.calc && l == "" {
-                "0".to_string()
-            } else if !self.calc && l != "" {
-                l.to_string()
-            } else if !self.calc && !self.operator.is_none() {
-                r.to_string()
-            } else if self.calc {
-                ans.to_string()
-            } else {
-                "0".to_string()
-            })
-            .size(40),
+            text(
+                match (
+                    self.lhs.as_str(),
+                    self.rhs.as_str(),
+                    self.operator,
+                    self.result,
+                ) {
+                    ("", "", None, 0) => "0".to_owned(),
+                    (lhs, "", None, 0) | (lhs, "", Some(_), 0) => lhs.to_owned(),
+                    (_, rhs, Some(_), 0) => rhs.to_owned(),
+                    (_, _, Some(_), ans) => ans.to_string(),
+                    _ => "0".to_owned(),
+                },
+            )
+            .size(match self.lhs.len() {
+                0..=9 => 40,
+                10 => 35,
+                11 => 30,
+                12 => 25,
+                13 => 20,
+                _ => 15,
+            }),
         )
         .align_x(Horizontal::Right)
         .align_y(Vertical::Bottom)
