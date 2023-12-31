@@ -23,8 +23,13 @@ fn main() -> iced::Result {
             visible: true,
             transparent: true,
             platform_specific: PlatformSpecific {
+                #[cfg(all(target_os = "macos"))]
                 title_hidden: true,
+
+                #[cfg(all(target_os = "macos"))]
                 titlebar_transparent: true,
+
+                #[cfg(all(target_os = "macos"))]
                 fullsize_content_view: true,
             },
             ..Default::default()
