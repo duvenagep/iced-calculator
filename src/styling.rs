@@ -14,7 +14,7 @@ pub enum Button {
 impl button::StyleSheet for Button {
     type Style = Theme;
 
-    fn active(&self, style: &Self::Style) -> button::Appearance {
+    fn active(&self, _style: &Self::Style) -> button::Appearance {
         match &self {
             Button::Num => button::Appearance {
                 background: Some(Background::Color(color!(0x5F, 0x5F, 0x61).into())),
@@ -66,7 +66,7 @@ pub struct InputResultContainer(pub Palette);
 impl container::StyleSheet for InputResultContainer {
     type Style = Theme;
 
-    fn appearance(&self, style: &Self::Style) -> container::Appearance {
+    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: color!(255, 255, 255).into(),
             background: Some(Background::Color(color!(0x29, 0x29, 0x26).into())),

@@ -46,7 +46,7 @@ struct Calculator {
 }
 
 #[derive(Debug, Clone)]
-enum Message {
+pub enum Message {
     OnInput(String),
     Add,
     Subtract,
