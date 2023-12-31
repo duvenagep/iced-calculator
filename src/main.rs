@@ -1,16 +1,17 @@
-#![warn(clippy::all, clippy::pedantic)]
+#![warn(clippy::all)]
 
 mod styling;
 mod view;
 
 use iced::alignment::{Horizontal, Vertical};
 use iced::executor;
-use iced::keyboard;
+use iced::keyboard::{Event, KeyCode};
 use iced::theme;
 use iced::widget::{button, column, container, row, text};
 use iced::window::PlatformSpecific;
 use iced::window::Position;
-use iced::{window, Application, Command, Length, Settings, Subscription, Theme};
+use iced::Event::Keyboard;
+use iced::{subscription, window, Application, Command, Length, Settings, Subscription, Theme};
 
 fn main() -> iced::Result {
     let settings = Settings {
@@ -91,12 +92,17 @@ impl Application for Calculator {
                 *self = Self::default();
             }
             Message::OnInput(val) => {
-                if self.operator.is_none() {
+                if val == "b".to_string() && self.operator.is_none() {
+                    self.lhs.pop();
+                } else if val == "b".to_string() && !self.operator.is_none() {
+                    self.rhs.pop();
+                } else if self.operator.is_none() {
                     self.lhs.push_str(&val);
                 } else {
                     self.rhs.push_str(&val);
                 }
             }
+
             Message::Answer => {
                 let l = if self.lhs.contains(",") {
                     self.lhs.replace(",", ".").parse::<f64>().unwrap()
@@ -111,29 +117,57 @@ impl Application for Calculator {
                     self.rhs.parse::<f64>().unwrap()
                 };
 
-                match self.operator.unwrap() {
-                    '+' => {
+                match self.operator {
+                    Some('+') => {
                         self.result = l + r;
                     }
-                    '-' => {
+                    Some('-') => {
                         self.result = l - r;
                     }
-                    'x' => {
+                    Some('x') => {
                         self.result = l * r;
                     }
-                    '÷' => {
+                    Some('÷') => {
                         self.result = l / r;
                     }
-                    _ => {}
+                    Some(_) | None => {}
                 }
             }
         }
         Command::none()
     }
 
-    // fn subscription(&self) -> iced::Subscription<Self::Message> {
-    //     todo!()
-    // }
+    fn subscription(&self) -> iced::Subscription<Self::Message> {
+        let keyboard_subs = subscription::events_with(|event, _| match event {
+            Keyboard(Event::KeyPressed {
+                key_code,
+                modifiers,
+            }) => match key_code {
+                KeyCode::Key0 | KeyCode::Numpad0 => Some(Message::OnInput("0".to_string())),
+                KeyCode::Key1 | KeyCode::Numpad1 => Some(Message::OnInput("1".to_string())),
+                KeyCode::Key2 | KeyCode::Numpad2 => Some(Message::OnInput("2".to_string())),
+                KeyCode::Key3 | KeyCode::Numpad3 => Some(Message::OnInput("3".to_string())),
+                KeyCode::Key4 | KeyCode::Numpad4 => Some(Message::OnInput("4".to_string())),
+                KeyCode::Key5 | KeyCode::Numpad5 => Some(Message::OnInput("5".to_string())),
+                KeyCode::Key6 | KeyCode::Numpad6 => Some(Message::OnInput("6".to_string())),
+                KeyCode::Key7 | KeyCode::Numpad7 => Some(Message::OnInput("7".to_string())),
+                KeyCode::Key8 | KeyCode::Numpad8 => Some(Message::OnInput("8".to_string())),
+                KeyCode::Key9 | KeyCode::Numpad9 => Some(Message::OnInput("9".to_string())),
+                KeyCode::NumpadComma => Some(Message::OnInput(",".to_string())),
+                KeyCode::NumpadAdd => Some(Message::Add),
+                KeyCode::NumpadSubtract => Some(Message::Subtract),
+                KeyCode::NumpadDivide => Some(Message::Devide),
+                KeyCode::NumpadMultiply => Some(Message::Multiply),
+                KeyCode::Backspace => Some(Message::OnInput("b".to_string())),
+                KeyCode::Escape => Some(Message::Clear),
+                KeyCode::Enter | KeyCode::NumpadEnter => Some(Message::Answer),
+                _ => None,
+            },
+            _ => None,
+        });
+
+        Subscription::batch([keyboard_subs])
+    }
 
     #[allow(clippy::too_many_lines)]
     fn view(&self) -> iced::Element<'_, Self::Message> {
@@ -366,12 +400,12 @@ impl Application for Calculator {
                     self.lhs.as_str(),
                     self.rhs.as_str(),
                     self.operator,
-                    self.result,
+                    self.result == 0.0,
                 ) {
-                    ("", "", None, 0.0) => "0".to_owned(),
-                    (lhs, "", None | Some(_), 0.0) => lhs.to_owned(),
-                    (_, rhs, Some(_), 0.0) => rhs.to_owned(),
-                    (_, _, Some(_), ans) => ans.to_string(),
+                    ("", "", None, true) => "0".to_owned(),
+                    (lhs, "", None | Some(_), true) => lhs.to_owned(),
+                    (_, rhs, Some(_), true) => rhs.to_owned(),
+                    (_, _, Some(_), false) => self.result.to_string(),
                     _ => "0".to_owned(),
                 },
             )
