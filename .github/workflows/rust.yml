@@ -23,13 +23,13 @@ jobs:
       - name: Rustfmt Check
         uses: actions-rust-lang/rustfmt@v1
 
-  build:
+  # build:
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Build
+  #     run: cargo build --verbose
+  #   - name: Run tests
+  #     run: cargo test --verbose

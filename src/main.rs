@@ -5,11 +5,12 @@ mod view;
 
 use iced::alignment::{Horizontal, Vertical};
 use iced::executor;
+use iced::keyboard;
 use iced::theme;
 use iced::widget::{button, column, container, row, text};
 use iced::window::PlatformSpecific;
 use iced::window::Position;
-use iced::{window, Application, Command, Length, Settings, Theme};
+use iced::{window, Application, Command, Length, Settings, Subscription, Theme};
 
 fn main() -> iced::Result {
     let settings = Settings {
@@ -23,31 +24,36 @@ fn main() -> iced::Result {
             visible: true,
             transparent: true,
             platform_specific: PlatformSpecific {
-                #[cfg(all(target_os = "macos"))]
+                #[cfg(target_os = "macos")]
                 title_hidden: true,
 
-                #[cfg(all(target_os = "macos"))]
+                #[cfg(target_os = "macos")]
                 titlebar_transparent: true,
 
-                #[cfg(all(target_os = "macos"))]
+                #[cfg(target_os = "macos")]
                 fullsize_content_view: true,
             },
             ..Default::default()
         },
         antialiasing: true,
-
         ..Default::default()
     };
 
     Calculator::run(settings)
 }
 
+// #[derive(Debug, Clone)]
+// enum NumricInput<T> {
+//     Decimal(T),
+//     Whole(T),
+// }
+
 #[derive(Debug, Clone, Default)]
 struct Calculator {
     lhs: String,
     rhs: String,
     operator: Option<char>,
-    result: usize,
+    result: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -72,7 +78,7 @@ impl Application for Calculator {
     }
 
     fn title(&self) -> String {
-        String::from("")
+        String::new()
     }
 
     fn update(&mut self, message: Self::Message) -> Command<Message> {
@@ -81,39 +87,55 @@ impl Application for Calculator {
             Message::Subtract => self.operator = Some('-'),
             Message::Multiply => self.operator = Some('x'),
             Message::Devide => self.operator = Some('÷'),
-            Message::OnInput(val) => {
-                if self.operator.is_none() {
-                    self.lhs.push_str(&val)
-                } else {
-                    self.rhs.push_str(&val)
-                }
-            }
             Message::Clear => {
                 *self = Self::default();
             }
-            Message::Answer => match self.operator.unwrap() {
-                '+' => {
-                    self.result =
-                        self.lhs.parse::<usize>().unwrap() + self.rhs.parse::<usize>().unwrap();
+            Message::OnInput(val) => {
+                if self.operator.is_none() {
+                    self.lhs.push_str(&val);
+                } else {
+                    self.rhs.push_str(&val);
                 }
-                '-' => {
-                    self.result =
-                        self.lhs.parse::<usize>().unwrap() - self.rhs.parse::<usize>().unwrap();
+            }
+            Message::Answer => {
+                let l = if self.lhs.contains(",") {
+                    self.lhs.replace(",", ".").parse::<f64>().unwrap()
+                } else {
+                    self.lhs.push_str(".0");
+                    self.lhs.parse::<f64>().unwrap()
+                };
+                let r = if self.rhs.contains(",") {
+                    self.rhs.replace(",", ".").parse::<f64>().unwrap()
+                } else {
+                    self.rhs.push_str(".0");
+                    self.rhs.parse::<f64>().unwrap()
+                };
+
+                match self.operator.unwrap() {
+                    '+' => {
+                        self.result = l + r;
+                    }
+                    '-' => {
+                        self.result = l - r;
+                    }
+                    'x' => {
+                        self.result = l * r;
+                    }
+                    '÷' => {
+                        self.result = l / r;
+                    }
+                    _ => {}
                 }
-                'x' => {
-                    self.result =
-                        self.lhs.parse::<usize>().unwrap() * self.rhs.parse::<usize>().unwrap();
-                }
-                '÷' => {
-                    self.result =
-                        self.lhs.parse::<usize>().unwrap() / self.rhs.parse::<usize>().unwrap();
-                }
-                _ => {}
-            },
+            }
         }
         Command::none()
     }
 
+    // fn subscription(&self) -> iced::Subscription<Self::Message> {
+    //     todo!()
+    // }
+
+    #[allow(clippy::too_many_lines)]
     fn view(&self) -> iced::Element<'_, Self::Message> {
         let zero = button(
             text("0")
@@ -346,9 +368,9 @@ impl Application for Calculator {
                     self.operator,
                     self.result,
                 ) {
-                    ("", "", None, 0) => "0".to_owned(),
-                    (lhs, "", None, 0) | (lhs, "", Some(_), 0) => lhs.to_owned(),
-                    (_, rhs, Some(_), 0) => rhs.to_owned(),
+                    ("", "", None, 0.0) => "0".to_owned(),
+                    (lhs, "", None | Some(_), 0.0) => lhs.to_owned(),
+                    (_, rhs, Some(_), 0.0) => rhs.to_owned(),
                     (_, _, Some(_), ans) => ans.to_string(),
                     _ => "0".to_owned(),
                 },

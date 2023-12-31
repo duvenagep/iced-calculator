@@ -17,7 +17,7 @@ impl button::StyleSheet for Button {
     fn active(&self, _style: &Self::Style) -> button::Appearance {
         match &self {
             Button::Num => button::Appearance {
-                background: Some(Background::Color(color!(0x5F, 0x5F, 0x61).into())),
+                background: Some(Background::Color(color!(0x5F, 0x5F, 0x61))),
                 text_color: color!(255, 255, 255),
                 border_radius: 0.0.into(),
                 border_color: color!(25, 25, 25),
@@ -25,7 +25,7 @@ impl button::StyleSheet for Button {
                 ..button::Appearance::default()
             },
             Button::Arth => button::Appearance {
-                background: Some(Background::Color(color!(0xF2, 0xA3, 0x3C).into())),
+                background: Some(Background::Color(color!(0xF2, 0xA3, 0x3C))),
                 text_color: color!(255, 255, 255),
                 border_radius: 0.0.into(),
                 border_color: color!(25, 25, 25),
@@ -33,7 +33,7 @@ impl button::StyleSheet for Button {
                 ..button::Appearance::default()
             },
             Button::Math => button::Appearance {
-                background: Some(Background::Color(color!(0x3F, 0x40, 0x41).into())),
+                background: Some(Background::Color(color!(0x3F, 0x40, 0x41))),
                 text_color: color!(255, 255, 255),
                 border_radius: 0.0.into(),
                 border_color: color!(25, 25, 25),
@@ -46,15 +46,15 @@ impl button::StyleSheet for Button {
     fn pressed(&self, style: &Self::Style) -> button::Appearance {
         match self {
             Button::Num => button::Appearance {
-                background: Some(Background::Color(color!(0xA1, 0xA2, 0xA4).into())),
+                background: Some(Background::Color(color!(0xA1, 0xA2, 0xA4))),
                 ..self.active(style)
             },
             Button::Arth => button::Appearance {
-                background: Some(Background::Color(color!(0xC0, 0x81, 0x2D).into())),
+                background: Some(Background::Color(color!(0xC0, 0x81, 0x2D))),
                 ..self.active(style)
             },
             Button::Math => button::Appearance {
-                background: Some(Background::Color(color!(0x5F, 0x5F, 0x61).into())),
+                background: Some(Background::Color(color!(0x5F, 0x5F, 0x61))),
                 ..self.active(style)
             },
         }
@@ -69,7 +69,7 @@ impl container::StyleSheet for InputResultContainer {
     fn appearance(&self, _style: &Self::Style) -> container::Appearance {
         container::Appearance {
             text_color: color!(255, 255, 255).into(),
-            background: Some(Background::Color(color!(0x29, 0x29, 0x26).into())),
+            background: Some(Background::Color(color!(0x29, 0x29, 0x26))),
 
             ..container::Appearance::default()
         }
