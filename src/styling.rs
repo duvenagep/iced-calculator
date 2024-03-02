@@ -1,7 +1,7 @@
 //! Buttons style
-use iced::color;
 use iced::theme::Palette;
 use iced::widget::{button, container};
+use iced::{color, Border};
 use iced::{Background, Theme};
 
 #[derive(Clone, Copy)]
@@ -19,25 +19,34 @@ impl button::StyleSheet for Button {
             Button::Num => button::Appearance {
                 background: Some(Background::Color(color!(0x5F, 0x5F, 0x61))),
                 text_color: color!(255, 255, 255),
-                border_radius: 0.0.into(),
-                border_color: color!(25, 25, 25),
-                border_width: 0.5,
+                border: Border {
+                    radius: 0.0.into(),
+                    color: color!(25, 25, 25),
+                    width: 0.5,
+                },
                 ..button::Appearance::default()
             },
             Button::Arth => button::Appearance {
                 background: Some(Background::Color(color!(0xF2, 0xA3, 0x3C))),
                 text_color: color!(255, 255, 255),
-                border_radius: 0.0.into(),
-                border_color: color!(25, 25, 25),
-                border_width: 0.5,
+                border: Border {
+                    radius: 0.0.into(),
+                    color: color!(25, 25, 25),
+                    width: 0.5,
+                },
                 ..button::Appearance::default()
             },
             Button::Math => button::Appearance {
                 background: Some(Background::Color(color!(0x3F, 0x40, 0x41))),
                 text_color: color!(255, 255, 255),
-                border_radius: 0.0.into(),
-                border_color: color!(25, 25, 25),
-                border_width: 0.5,
+                border: Border {
+                    radius: 0.0.into(),
+                    color: color!(25, 25, 25),
+                    width: 0.5,
+                },
+                // border_radius: 0.0.into(),
+                // border_color: color!(25, 25, 25),
+                // border_width: 0.5,
                 ..button::Appearance::default()
             },
         }

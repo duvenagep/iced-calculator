@@ -4,24 +4,25 @@ mod styling;
 mod view;
 
 use iced::alignment::{Horizontal, Vertical};
-use iced::executor;
-use iced::keyboard::{Event, KeyCode};
+use iced::keyboard::{key, Key};
 use iced::theme;
-use iced::widget::{button, column, container, row, text};
-use iced::window::PlatformSpecific;
+use iced::widget::{button, column, container, row, text, Button, Column, Row};
+use iced::window::settings::PlatformSpecific;
 use iced::window::Position;
-use iced::Event::Keyboard;
-use iced::{subscription, window, Application, Command, Length, Settings, Subscription, Theme};
+use iced::Size;
+use iced::{executor, keyboard};
+use iced::{window, Application, Command, Length, Settings, Theme};
+use view::button_view;
 
 fn main() -> iced::Result {
     let settings = Settings {
         window: window::Settings {
-            size: (232, 321),
+            size: Size::new(232.0, 321.0),
             resizable: true,
             decorations: true,
             position: Position::Default,
-            min_size: Some((232, 321)),
-            max_size: Some((232, 321)),
+            min_size: Some(Size::new(232.0, 321.0)),
+            max_size: Some(Size::new(232.0, 321.0)),
             visible: true,
             transparent: true,
             platform_specific: PlatformSpecific {
@@ -138,35 +139,29 @@ impl Application for Calculator {
     }
 
     fn subscription(&self) -> iced::Subscription<Self::Message> {
-        let keyboard_subs = subscription::events_with(|event, _| match event {
-            Keyboard(Event::KeyPressed {
-                key_code,
-                modifiers,
-            }) => match key_code {
-                KeyCode::Key0 | KeyCode::Numpad0 => Some(Message::OnInput("0".to_string())),
-                KeyCode::Key1 | KeyCode::Numpad1 => Some(Message::OnInput("1".to_string())),
-                KeyCode::Key2 | KeyCode::Numpad2 => Some(Message::OnInput("2".to_string())),
-                KeyCode::Key3 | KeyCode::Numpad3 => Some(Message::OnInput("3".to_string())),
-                KeyCode::Key4 | KeyCode::Numpad4 => Some(Message::OnInput("4".to_string())),
-                KeyCode::Key5 | KeyCode::Numpad5 => Some(Message::OnInput("5".to_string())),
-                KeyCode::Key6 | KeyCode::Numpad6 => Some(Message::OnInput("6".to_string())),
-                KeyCode::Key7 | KeyCode::Numpad7 => Some(Message::OnInput("7".to_string())),
-                KeyCode::Key8 | KeyCode::Numpad8 => Some(Message::OnInput("8".to_string())),
-                KeyCode::Key9 | KeyCode::Numpad9 => Some(Message::OnInput("9".to_string())),
-                KeyCode::NumpadComma => Some(Message::OnInput(",".to_string())),
-                KeyCode::NumpadAdd => Some(Message::Add),
-                KeyCode::NumpadSubtract => Some(Message::Subtract),
-                KeyCode::NumpadDivide => Some(Message::Devide),
-                KeyCode::NumpadMultiply => Some(Message::Multiply),
-                KeyCode::Backspace => Some(Message::OnInput("b".to_string())),
-                KeyCode::Escape => Some(Message::Clear),
-                KeyCode::Enter | KeyCode::NumpadEnter => Some(Message::Answer),
-                _ => None,
-            },
+        keyboard::on_key_press(|key, modifiers| match key.as_ref() {
+            key::Key::Character("0") => Some(Message::OnInput("0".to_string())),
+            key::Key::Character("1") => Some(Message::OnInput("1".to_string())),
+            key::Key::Character("2") => Some(Message::OnInput("2".to_string())),
+            key::Key::Character("3") => Some(Message::OnInput("3".to_string())),
+            key::Key::Character("4") => Some(Message::OnInput("4".to_string())),
+            key::Key::Character("5") => Some(Message::OnInput("5".to_string())),
+            key::Key::Character("6") => Some(Message::OnInput("6".to_string())),
+            key::Key::Character("7") => Some(Message::OnInput("7".to_string())),
+            key::Key::Character("8") => Some(Message::OnInput("8".to_string())),
+            key::Key::Character("9") => Some(Message::OnInput("9".to_string())),
+            key::Key::Character(",") | key::Key::Character(".") => {
+                Some(Message::OnInput(".".to_string()))
+            }
+            key::Key::Character("+") => Some(Message::Add),
+            key::Key::Character("-") => Some(Message::Subtract),
+            key::Key::Character("/") => Some(Message::Devide),
+            key::Key::Character("*") => Some(Message::Multiply),
+            Key::Named(key::Named::Backspace) => Some(Message::OnInput("b".to_string())),
+            Key::Named(key::Named::Escape) => Some(Message::Clear),
+            Key::Named(key::Named::Enter) => Some(Message::Answer),
             _ => None,
-        });
-
-        Subscription::batch([keyboard_subs])
+        })
     }
 
     #[allow(clippy::too_many_lines)]
@@ -178,6 +173,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::FillPortion(2))
+        .height(Length::Fill)
         .on_press(Message::OnInput("0".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -189,6 +185,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::FillPortion(1))
+        .height(Length::Fill)
         .on_press(Message::OnInput(",".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -200,6 +197,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::FillPortion(1))
+        .height(Length::Fill)
         .on_press(Message::Answer)
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
@@ -213,6 +211,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("1".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -224,6 +223,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("2".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -235,6 +235,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("3".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -246,6 +247,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::Add)
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
@@ -259,6 +261,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("4".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -270,6 +273,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("5".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -281,6 +285,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("6".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -292,6 +297,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::Subtract)
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
@@ -305,6 +311,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("7".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -316,6 +323,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("8".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -327,6 +335,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::OnInput("9".to_string()))
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Num)));
@@ -338,6 +347,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::Multiply)
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
@@ -355,6 +365,7 @@ impl Application for Calculator {
             .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::Clear)
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Math)));
@@ -366,6 +377,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::Add)
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Math)));
@@ -377,6 +389,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::Add)
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Math)));
@@ -388,6 +401,7 @@ impl Application for Calculator {
                 .vertical_alignment(Vertical::Center),
         )
         .width(Length::Fill)
+        .height(Length::Fill)
         .on_press(Message::Devide)
         .padding([5, 10])
         .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
@@ -435,6 +449,7 @@ impl Application for Calculator {
             row_1.height(Length::FillPortion(1)),
             row_0.height(Length::FillPortion(1))
         ]
+        .spacing(0.0)
         .into();
     }
 }
