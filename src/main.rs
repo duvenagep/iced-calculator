@@ -12,7 +12,8 @@ use iced::window::Position;
 use iced::Size;
 use iced::{executor, keyboard};
 use iced::{window, Application, Command, Length, Settings, Theme};
-use view::button_view;
+use styling::Button::{Arth, Math, Num};
+use view::{button_view, buttons_collect};
 
 fn main() -> iced::Result {
     let settings = Settings {
@@ -44,12 +45,6 @@ fn main() -> iced::Result {
     Calculator::run(settings)
 }
 
-// #[derive(Debug, Clone)]
-// enum NumricInput<T> {
-//     Decimal(T),
-//     Whole(T),
-// }
-
 #[derive(Debug, Clone, Default)]
 struct Calculator {
     lhs: String,
@@ -58,7 +53,7 @@ struct Calculator {
     result: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub enum Message {
     OnInput(String),
     Add,
@@ -85,61 +80,61 @@ impl Application for Calculator {
 
     fn update(&mut self, message: Self::Message) -> Command<Message> {
         match message {
-            Message::Add => self.operator = Some('+'),
-            Message::Subtract => self.operator = Some('-'),
-            Message::Multiply => self.operator = Some('x'),
-            Message::Devide => self.operator = Some('÷'),
+            Message::Add => {
+                self.operator = Some('+');
+                self.rhs = "".to_string();
+            }
+            Message::Subtract => {
+                self.operator = Some('-');
+                self.rhs = "".to_string();
+            }
+            Message::Multiply => {
+                self.operator = Some('x');
+                self.rhs = "".to_string();
+            }
+            Message::Devide => {
+                self.operator = Some('÷');
+                self.rhs = "".to_string();
+            }
             Message::Clear => {
                 *self = Self::default();
             }
             Message::OnInput(val) => {
-                if val == "b".to_string() && self.operator.is_none() {
+                if val == "b" && self.operator.is_none() {
                     self.lhs.pop();
-                } else if val == "b".to_string() && !self.operator.is_none() {
+                    self.result = self.lhs.replace(",", ".").parse::<f64>().unwrap();
+                } else if val == "b" && !self.operator.is_none() {
                     self.rhs.pop();
+                    self.result = self.rhs.replace(",", ".").parse::<f64>().unwrap();
                 } else if self.operator.is_none() {
                     self.lhs.push_str(&val);
+                    self.result = self.lhs.replace(",", ".").parse::<f64>().unwrap();
                 } else {
                     self.rhs.push_str(&val);
+                    self.result = self.rhs.replace(",", ".").parse::<f64>().unwrap();
                 }
             }
 
             Message::Answer => {
-                let l = if self.lhs.contains(",") {
-                    self.lhs.replace(",", ".").parse::<f64>().unwrap()
-                } else {
-                    self.lhs.push_str(".0");
-                    self.lhs.parse::<f64>().unwrap()
-                };
-                let r = if self.rhs.contains(",") {
-                    self.rhs.replace(",", ".").parse::<f64>().unwrap()
-                } else {
-                    self.rhs.push_str(".0");
-                    self.rhs.parse::<f64>().unwrap()
+                let l = self.lhs.replace(",", ".").parse::<f64>().unwrap();
+                let r = self.rhs.replace(",", ".").parse::<f64>().unwrap();
+
+                self.result = match self.operator {
+                    Some('+') => l + r,
+                    Some('-') => l - r,
+                    Some('x') => l * r,
+                    Some('÷') => l / r,
+                    Some(_) | None => 0.0,
                 };
 
-                match self.operator {
-                    Some('+') => {
-                        self.result = l + r;
-                    }
-                    Some('-') => {
-                        self.result = l - r;
-                    }
-                    Some('x') => {
-                        self.result = l * r;
-                    }
-                    Some('÷') => {
-                        self.result = l / r;
-                    }
-                    Some(_) | None => {}
-                }
+                self.lhs = self.result.to_string();
             }
         }
         Command::none()
     }
 
     fn subscription(&self) -> iced::Subscription<Self::Message> {
-        keyboard::on_key_press(|key, modifiers| match key.as_ref() {
+        keyboard::on_key_press(|key, _modifiers| match key.as_ref() {
             key::Key::Character("0") => Some(Message::OnInput("0".to_string())),
             key::Key::Character("1") => Some(Message::OnInput("1".to_string())),
             key::Key::Character("2") => Some(Message::OnInput("2".to_string())),
@@ -166,272 +161,64 @@ impl Application for Calculator {
 
     #[allow(clippy::too_many_lines)]
     fn view(&self) -> iced::Element<'_, Self::Message> {
-        let zero = button(
-            text("0")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::FillPortion(2))
-        .height(Length::Fill)
-        .on_press(Message::OnInput("0".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
+        // let nums = (1..=9).into_iter().map(|n| n.to_string()).collect();
+        // let btns: Vec<Button<'static, Message>> = buttons_collect(nums, Num, 1);
 
-        let comma = button(
-            text(",")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::FillPortion(1))
-        .height(Length::Fill)
-        .on_press(Message::OnInput(",".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let equals = button(
-            text("=")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::FillPortion(1))
-        .height(Length::Fill)
-        .on_press(Message::Answer)
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
+        let zero = button_view("0", Message::OnInput("0".to_string()), 2, Num);
+        let comma = button_view(",", Message::OnInput(",".to_string()), 1, Num);
+        let equals = button_view("=", Message::Answer, 1, Arth);
 
         let row_0 = row![zero, comma, equals];
 
-        let one = button(
-            text("1")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("1".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let two = button(
-            text("2")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("2".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let three = button(
-            text("3")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("3".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let add = button(
-            text("+")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::Add)
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
+        let one = button_view("1", Message::OnInput("1".to_string()), 1, Num);
+        let two = button_view("2", Message::OnInput("2".to_string()), 1, Num);
+        let three = button_view("3", Message::OnInput("3".to_string()), 1, Num);
+        let add = button_view("+", Message::Add, 1, Arth);
 
         let row_1 = row![one, two, three, add];
 
-        let four = button(
-            text("4")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("4".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let five = button(
-            text("5")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("5".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let six = button(
-            text("6")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("6".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let subtract = button(
-            text("-")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::Subtract)
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
+        let four = button_view("4", Message::OnInput("4".to_string()), 1, Num);
+        let five = button_view("5", Message::OnInput("5".to_string()), 1, Num);
+        let six = button_view("6", Message::OnInput("6".to_string()), 1, Num);
+        let subtract = button_view("-", Message::Subtract, 1, Arth);
 
         let row_2 = row![four, five, six, subtract];
 
-        let seven = button(
-            text("7")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("7".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let eight = button(
-            text("8")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("8".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let nine = button(
-            text("9")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::OnInput("9".to_string()))
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Num)));
-
-        let multiply = button(
-            text("x")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::Multiply)
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
+        let seven = button_view("7", Message::OnInput("7".to_string()), 1, Num);
+        let eight = button_view("8", Message::OnInput("8".to_string()), 1, Num);
+        let nine = button_view("9", Message::OnInput("9".to_string()), 1, Num);
+        let multiply = button_view("x", Message::Multiply, 1, Arth);
 
         let row_3 = row![seven, eight, nine, multiply];
 
-        let clear = button(
-            text(if self.lhs.is_empty() {
+        let clear = button_view(
+            if self.lhs.is_empty() {
                 "AC".to_string()
             } else {
                 "C".to_string()
-            })
-            .size(20)
-            .horizontal_alignment(Horizontal::Center)
-            .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::Clear)
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Math)));
-
-        let plus_minus = button(
-            text("±")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::Add)
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Math)));
-
-        let percentage = button(
-            text("%")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::Add)
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Math)));
-
-        let devide = button(
-            text("÷")
-                .size(25)
-                .horizontal_alignment(Horizontal::Center)
-                .vertical_alignment(Vertical::Center),
-        )
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .on_press(Message::Devide)
-        .padding([5, 10])
-        .style(theme::Button::Custom(Box::new(styling::Button::Arth)));
+            },
+            Message::Clear,
+            1,
+            Math,
+        );
+        let plus_minus = button_view("±", Message::Add, 1, Math);
+        let percentage = button_view("%", Message::Add, 1, Math);
+        let devide = button_view("÷", Message::Devide, 1, Arth);
 
         let row_4 = row![clear, plus_minus, percentage, devide];
 
-        let calculation = container(
-            text(
-                match (
-                    self.lhs.as_str(),
-                    self.rhs.as_str(),
-                    self.operator,
-                    self.result == 0.0,
-                ) {
-                    ("", "", None, true) => "0".to_owned(),
-                    (lhs, "", None | Some(_), true) => lhs.to_owned(),
-                    (_, rhs, Some(_), true) => rhs.to_owned(),
-                    (_, _, Some(_), false) => self.result.to_string(),
-                    _ => "0".to_owned(),
-                },
-            )
-            .size(match self.lhs.len() {
-                0..=9 => 40,
-                10 => 35,
-                11 => 30,
-                12 => 25,
-                13 => 20,
-                _ => 15,
-            }),
-        )
+        let calculation = container(text(self.result.to_string()).size(match self.lhs.len() {
+            0..=9 => 40,
+            10 => 37,
+            11 => 34,
+            12 => 31,
+            13 => 28,
+            14 => 25,
+            15 => 22,
+            16 => 19,
+            17 => 16,
+            _ => 16,
+        }))
         .align_x(Horizontal::Right)
         .align_y(Vertical::Bottom)
         .width(Length::Fill)

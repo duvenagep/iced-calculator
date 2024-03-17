@@ -44,9 +44,6 @@ impl button::StyleSheet for Button {
                     color: color!(25, 25, 25),
                     width: 0.5,
                 },
-                // border_radius: 0.0.into(),
-                // border_color: color!(25, 25, 25),
-                // border_width: 0.5,
                 ..button::Appearance::default()
             },
         }

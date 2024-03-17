@@ -3,12 +3,11 @@ use crate::Message;
 use iced::alignment::{Horizontal, Vertical};
 use iced::theme;
 use iced::widget::button::Button;
-use iced::widget::Themer;
 use iced::widget::{button, text};
-use iced::{Length, Renderer, Theme};
+use iced::Length;
 
-pub fn button_view(
-    txt: &str,
+pub fn button_view<T: ToString>(
+    txt: T,
     message: Message,
     w: u16,
     style: styling::Button,
@@ -29,8 +28,11 @@ pub fn button_view(
 pub fn buttons_collect<T: ToString>(
     nums: Vec<T>,
     style: styling::Button,
-) -> Vec<Button<'static, Message>> {
+    w: u16,
+) -> Vec<Button<'static, Message>>
+where
+{
     nums.into_iter()
-        .map(|b| button_view(&b.to_string(), Message::OnInput(b.to_string()), 1, style))
+        .map(|b| button_view(b.to_string(), Message::OnInput(b.to_string()), w, style))
         .collect()
 }
